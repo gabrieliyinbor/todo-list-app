@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>To-Do List</h2>
+        <button id="logout">Logout</button>
+        
+        <div class="filter-form">
+            <h3>Filters</h3>
+            <form id="filterForm">
+                <div class="form-group">
+                    <label for="filterTag">Filter by Tag:</label>
+                    <input type="text" id="filterTag">
+                </div>
+                <div class="form-group">
+                    <label for="filterPriority">Filter by Priority:</label>
+                    <select id="filterPriority">
+                        <option value="">All</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterStartDate">Start Date:</label>
+                    <input type="date" id="filterStartDate">
+                </div>
+                <div class="form-group">
+                    <label for="filterEndDate">End Date:</label>
+                    <input type="date" id="filterEndDate">
+                </div>
+                <button type="button" onclick="applyFilters()">Apply Filters</button>
+            </form>
+        </div>
+        
+        <div class="task-form">
+            <h3>Create Task</h3>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskName">Task Name:</label>
+                    <input type="text" id="taskName" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority:</label>
+                    <select id="priority" required>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tags">Tags:</label>
+                    <input type="text" id="tags" required>
+                </div>
+                <div class="form-group">
+                    <label for="dueDate">Due Date:</label>
+                    <input type="date" id="dueDate" required>
+                </div>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+        
+        <div class="task-list">
+            <h3>Tasks</h3>
+            <ul id="tasks"></ul>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
