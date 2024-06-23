@@ -62,6 +62,7 @@ button.danger:hover {
 
 button.logout {
     background-color: #dc3545;
+    color: white; /* Ensure text color is white */
     margin-top: 10px;
 }
 

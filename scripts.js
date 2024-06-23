@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const taskBeingEdited = JSON.parse(localStorage.getItem('taskBeingEdited'));
+    let taskBeingEdited = JSON.parse(localStorage.getItem('taskBeingEdited'));
 
     if (document.getElementById('loginForm')) {
         document.getElementById('loginForm').addEventListener('submit', loginUser);
@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         localStorage.setItem('tasks', JSON.stringify(tasks));
+        taskBeingEdited = null;
         renderTasks();
         document.getElementById('taskForm').reset();
     }
@@ -222,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('priority').value = task.priority;
         document.getElementById('tags').value = task.tags;
         document.getElementById('dueDate').value = task.dueDate;
+        taskBeingEdited = task;
     }
 
     window.deleteTask = function (taskId) {
