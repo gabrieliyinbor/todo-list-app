@@ -26,14 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function validateDate(date) {
         const parsedDate = Date.parse(date);
-        return !isNaN(parsedDate);
+        if (isNaN(parsedDate)) {
+            return false;
+        }
+        const dateObj = new Date(date);
+        const currentYear = new Date().getFullYear();
+        const year = dateObj.getFullYear();
+        return year >= currentYear && year <= currentYear + 100; // Example validation range: current year to 100 years in the future
     }
 
     function loginUser(event) {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        
+
         if (!validateInput(username) || !validateInput(password)) {
             alert('Fields cannot be empty or contain only spaces.');
             return;
@@ -52,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        
+
         if (!validateInput(username) || !validateInput(password)) {
             alert('Fields cannot be empty or contain only spaces.');
             return;
@@ -92,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const priority = document.getElementById('priority').value;
         const tags = document.getElementById('tags').value;
         const dueDate = document.getElementById('dueDate').value;
-        
+
         if (!validateInput(taskName) || !validateInput(description) || !validateDate(dueDate)) {
             alert('Please fill in all fields correctly.');
             return;
