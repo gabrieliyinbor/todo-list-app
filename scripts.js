@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const taskBeingEdited = JSON.parse(localStorage.getItem('taskBeingEdited'));
 
     if (document.getElementById('loginForm')) {
         document.getElementById('loginForm').addEventListener('submit', loginUser);
@@ -12,16 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (document.getElementById('taskForm')) {
-        document.getElementById('taskForm').addEventListener('submit', addTask);
+        document.getElementById('taskForm').addEventListener('submit', addOrUpdateTask);
         document.getElementById('logout').addEventListener('click', logoutUser);
         renderTasks();
+        if (taskBeingEdited) {
+            populateTaskForm(taskBeingEdited);
+        }
     }
 
     function validateInput(input) {
-        if (!input || input.trim() === '') {
-            return false;
-        }
-        return true;
+        return input && input.trim() !== '';
     }
 
     function validateDate(date) {
@@ -32,20 +33,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const dateObj = new Date(date);
         const currentYear = new Date().getFullYear();
         const year = dateObj.getFullYear();
-        return year >= currentYear && year <= currentYear + 100; // Example validation range: current year to 100 years in the future
+        return year >= currentYear && year <= currentYear + 100;
+    }
+
+    function showValidationError(element, message) {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.innerText = message;
+        element.classList.add('error');
+        element.parentElement.appendChild(errorElement);
+    }
+
+    function clearValidationErrors() {
+        const errors = document.querySelectorAll('.error-message');
+        errors.forEach(error => error.remove());
+        const errorFields = document.querySelectorAll('.error');
+        errorFields.forEach(field => field.classList.remove('error'));
     }
 
     function loginUser(event) {
         event.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        clearValidationErrors();
 
-        if (!validateInput(username) || !validateInput(password)) {
-            alert('Fields cannot be empty or contain only spaces.');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+
+        if (!validateInput(username.value)) {
+            showValidationError(username, 'Username cannot be empty or spaces.');
+        }
+
+        if (!validateInput(password.value)) {
+            showValidationError(password, 'Password cannot be empty or spaces.');
+        }
+
+        if (document.querySelectorAll('.error').length > 0) {
             return;
         }
 
-        const user = users.find(user => user.username === username && user.password === password);
+        const user = users.find(user => user.username === username.value && user.password === password.value);
         if (user) {
             localStorage.setItem('currentUser', JSON.stringify(user));
             window.location.href = 'todo.html';
@@ -56,26 +81,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function signUpUser(event) {
         event.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        clearValidationErrors();
 
-        if (!validateInput(username) || !validateInput(password)) {
-            alert('Fields cannot be empty or contain only spaces.');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+
+        if (!validateInput(username.value)) {
+            showValidationError(username, 'Username cannot be empty or spaces.');
+        } else if (username.value.length < 3) {
+            showValidationError(username, 'Username must be at least 3 characters long.');
+        }
+
+        if (!validateInput(password.value)) {
+            showValidationError(password, 'Password cannot be empty or spaces.');
+        } else if (password.value.length < 6) {
+            showValidationError(password, 'Password must be at least 6 characters long.');
+        }
+
+        if (document.querySelectorAll('.error').length > 0) {
             return;
         }
 
-        if (username.length < 3) {
-            alert('Username must be at least 3 characters long.');
-            return;
-        }
-
-        if (password.length < 6) {
-            alert('Password must be at least 6 characters long.');
-            return;
-        }
-
-        const user = { username, password };
-        if (users.find(user => user.username === username)) {
+        const user = { username: username.value, password: password.value };
+        if (users.find(user => user.username === username.value)) {
             alert('Username already exists');
             return;
         }
@@ -91,32 +119,54 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     }
 
-    function addTask(event) {
+    function addOrUpdateTask(event) {
         event.preventDefault();
-        const taskName = document.getElementById('taskName').value;
-        const description = document.getElementById('description').value;
-        const priority = document.getElementById('priority').value;
-        const tags = document.getElementById('tags').value;
-        const dueDate = document.getElementById('dueDate').value;
+        clearValidationErrors();
 
-        if (!validateInput(taskName) || !validateInput(description) || !validateDate(dueDate)) {
-            alert('Please fill in all fields correctly.');
+        const taskName = document.getElementById('taskName');
+        const description = document.getElementById('description');
+        const priority = document.getElementById('priority');
+        const tags = document.getElementById('tags');
+        const dueDate = document.getElementById('dueDate');
+
+        if (!validateInput(taskName.value)) {
+            showValidationError(taskName, 'Task name cannot be empty or spaces.');
+        }
+
+        if (!validateInput(description.value)) {
+            showValidationError(description, 'Description cannot be empty or spaces.');
+        }
+
+        if (!validateDate(dueDate.value)) {
+            showValidationError(dueDate, 'Please enter a valid date.');
+        }
+
+        if (document.querySelectorAll('.error').length > 0) {
             return;
         }
 
         const task = {
-            id: Date.now(),
+            id: taskBeingEdited ? taskBeingEdited.id : Date.now(),
             user: currentUser.username,
-            taskName,
-            description,
-            priority,
-            tags,
-            dueDate,
-            completed: false
+            taskName: taskName.value,
+            description: description.value,
+            priority: priority.value,
+            tags: tags.value,
+            dueDate: dueDate.value,
+            completed: taskBeingEdited ? taskBeingEdited.completed : false
         };
-        tasks.push(task);
+
+        if (taskBeingEdited) {
+            const index = tasks.findIndex(t => t.id === taskBeingEdited.id);
+            tasks[index] = task;
+            localStorage.removeItem('taskBeingEdited');
+        } else {
+            tasks.push(task);
+        }
+
         localStorage.setItem('tasks', JSON.stringify(tasks));
         renderTasks();
+        document.getElementById('taskForm').reset();
     }
 
     function renderTasks(filteredTasks = null) {
@@ -161,14 +211,18 @@ document.addEventListener('DOMContentLoaded', () => {
     window.editTask = function (taskId) {
         const task = tasks.find(task => task.id === taskId);
         if (task) {
-            document.getElementById('taskName').value = task.taskName;
-            document.getElementById('description').value = task.description;
-            document.getElementById('priority').value = task.priority;
-            document.getElementById('tags').value = task.tags;
-            document.getElementById('dueDate').value = task.dueDate;
-            deleteTask(taskId);
+            populateTaskForm(task);
+            localStorage.setItem('taskBeingEdited', JSON.stringify(task));
         }
     };
+
+    function populateTaskForm(task) {
+        document.getElementById('taskName').value = task.taskName;
+        document.getElementById('description').value = task.description;
+        document.getElementById('priority').value = task.priority;
+        document.getElementById('tags').value = task.tags;
+        document.getElementById('dueDate').value = task.dueDate;
+    }
 
     window.deleteTask = function (taskId) {
         const taskIndex = tasks.findIndex(task => task.id === taskId);
