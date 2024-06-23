@@ -38,15 +38,18 @@ button {
     width: 100%;
     padding: 10px;
     border: none;
-    background-color: #28a745;
     color: white;
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #218838;
+button.login {
+    background-color: #dc3545;
+}
+
+button.login:hover {
+    background-color: #dc3545; /* Keep the same color on hover */
 }
 
 button.danger {
@@ -54,6 +57,15 @@ button.danger {
 }
 
 button.danger:hover {
+    background-color: #c82333;
+}
+
+button.logout {
+    background-color: #dc3545;
+    margin-top: 10px;
+}
+
+button.logout:hover {
     background-color: #c82333;
 }
 
@@ -96,4 +108,14 @@ button.danger:hover {
     text-align: center;
     color: gray;
     margin-top: 20px;
+}
+
+.error {
+    border-color: red;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
 }
