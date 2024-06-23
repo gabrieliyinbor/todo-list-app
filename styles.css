@@ -7,7 +7,7 @@ body {
 
 .container {
     max-width: 600px;
-    margin: 50px auto;
+    margin: 20px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
@@ -49,6 +49,14 @@ button:hover {
     background-color: #218838;
 }
 
+button.danger {
+    background-color: #dc3545;
+}
+
+button.danger:hover {
+    background-color: #c82333;
+}
+
 .task-list ul {
     list-style-type: none;
     padding: 0;
@@ -78,7 +86,14 @@ button:hover {
     padding: 5px;
     font-size: 14px;
 }
+
 .completed {
     text-decoration: line-through;
     color: gray;
+}
+
+.no-tasks {
+    text-align: center;
+    color: gray;
+    margin-top: 20px;
 }
